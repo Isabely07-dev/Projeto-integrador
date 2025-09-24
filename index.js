@@ -1,4 +1,4 @@
-const { input, select } = require('@inquirer/prompts');
+const { input, select, checkbox } = require('@inquirer/prompts');
 
 
 console.log("Bem-Vindo ao sistema de metas pessoais!");
@@ -19,6 +19,7 @@ async function mostrarMenu() {
         choices: [
             { name: "📝 Adicionar Meta", value: "adicionar" },
             { name: "🗒️  Mostrar Metas", value: "mostrar" },
+            { name: "✅ Marcar Metas Realizadas", value: "marcar" },
             { name: "❌ Sair", value: "sair" }
         ]
     });
@@ -32,6 +33,9 @@ async function executarAcao(opcao) {
             break;
         case "mostrar":
             await mostrarMetas();
+            break;
+            case "marcar":
+            await marcarMetas();
             break;
         case "sair":
             console.log("Saindo do sistema. Até mais!");
@@ -92,6 +96,31 @@ async function mostrarMetas() {
         const status = meta.checked ? "[x]" : "[ ]";
         console.log(`${status} ${index + 1}. ${meta.value}`);
     });
+}
+
+async function marcarMetas() {
+    if (metas.length === 0) {
+        mostrarMensagem("Não existem metas cadastradas!");
+        return;
+    }
+    const metasSelecionadas = await checkbox({
+        message: "Selecione as metas que você concluiu:",
+        choices: metas.map(meta =>
+            ({  name: meta.value,
+                value: meta.value,
+                checked: meta.checked
+             })),
+    })
+    metasSelecionadas.forEach(metaSelecionada => {
+        const meta = metas.find(m => m.value === metaSelecionada);
+        if (meta) {
+            meta.checked = true;
+        }
+    });
+
+    mostrarMensagem("✔️  Metas atualizadas com sucesso!");
+
+    
 }
 
 iniciar();
