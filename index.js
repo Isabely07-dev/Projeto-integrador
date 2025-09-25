@@ -17,6 +17,8 @@ async function mostrarMenu() {
             { name: "📝 Adicionar Meta", value: "adicionar" },
             { name: "🗒️  Mostrar Metas", value: "mostrar" },
             { name: "✅ Marcar Metas Realizadas", value: "marcar" },
+            { name: "🏆 Mostrar metas Realizadas", value: "realizadas" },
+            { name: "📋 Mostrar Metas Abertas", value: "Metas abertas" },
             { name: "❌ Sair", value: "sair" }
         ]
     });
@@ -35,6 +37,12 @@ async function executarAcao(opcao) {
             await marcarMetas();
             break;
         case "sair":
+            break;
+        case "realizadas":
+            await metasRealizadas();
+            break;
+            case "Metas abertas":
+            await metasAbertas();
             break;
         default:
             console.log("Opção inválida. Tente novamente.");
@@ -125,7 +133,7 @@ async function marcarMetas() {
 async function metasRealizadas() {
     const Realizadas = metas.filter(meta => meta.checked);
     if (Realizadas.length === 0) {
-    mensagem = "Não existem metas realizadas!";
+    mostrarMensagem = "Não existem metas realizadas!";
     return;
 }
 console.log("Metas Realizadas:");
@@ -133,7 +141,23 @@ Realizadas.forEach((meta, index) => {
 console.log(`${index + 1}. ${meta.value}`);
 });
 
-mostrarMensagem("Parabéns você já concluiu {realizadas.length} metas! 🎉");
+mostrarMensagem(`Parabéns você já concluiu ${Realizadas.length} metas! 🎉`);
 }
+async function metasAbertas() {
+    const realizadas = metas.filter(meta => meta.checked);
 
+    if (metasAbertas.length === 0) {
+    mostrarMensagem = "Não existem metas abertas!";
+    return;
+ }
+
+ console.log("Metas abertas:");
+    metasAbertas.forEach((meta, index) => {
+    console.log(`${index + 1}. ${meta.value}`);
+});
+
+mostrarMensagem(`Você ainda tem ${metasAbertas.length} metas para concluir. Vamos lá! 💪`);
+
+}
+ 
 iniciar();
