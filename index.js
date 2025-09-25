@@ -1,8 +1,5 @@
 const { input, select, checkbox } = require('@inquirer/prompts');
 
-
-console.log("Bem-Vindo ao sistema de metas pessoais!");
-
 let metas =[]
 
 function limparTela() {
@@ -38,8 +35,7 @@ async function executarAcao(opcao) {
             await marcarMetas();
             break;
         case "sair":
-            console.log("Saindo do sistema. Até mais!");
-            process.exit(0);
+            break;
         default:
             console.log("Opção inválida. Tente novamente.");
     }
@@ -56,7 +52,7 @@ async function iniciar() {
         if (opcao === "sair") {
             await executarAcao(opcao);
             limparTela();
-            mostrarMensagem("Até mais!");
+            mostrarMensagem("Até mais!👋");
             break;
     }
     await executarAcao(opcao);
@@ -91,7 +87,7 @@ async function mostrarMetas() {
     }
 
 
-    console.log("Suas Metas Pessoais:");
+    console.log("❤️ Suas Metas Pessoais:");
     metas.forEach((meta, index) => {
         const status = meta.checked ? "[x]" : "[ ]";
         console.log(`${status} ${index + 1}. ${meta.value}`);
@@ -100,7 +96,7 @@ async function mostrarMetas() {
 
 async function marcarMetas() {
     if (metas.length === 0) {
-        mostrarMensagem("Não existem metas cadastradas!");
+        mostrarMensagem("❌ Não existem metas cadastradas!");
         return;
     }
     const metasSelecionadas = await checkbox({
@@ -111,6 +107,9 @@ async function marcarMetas() {
                 checked: meta.checked
              })),
     })
+
+    metas.forEach(meta => meta.checked = false);
+
     metasSelecionadas.forEach(metaSelecionada => {
         const meta = metas.find(m => m.value === metaSelecionada);
         if (meta) {
@@ -118,7 +117,7 @@ async function marcarMetas() {
         }
     });
 
-    mostrarMensagem("✔️  Metas atualizadas com sucesso!");
+    mostrarMensagem("✔️ Metas atualizadas com sucesso!");
 
     
 }
