@@ -18,7 +18,8 @@ async function mostrarMenu() {
             { name: "🗒️  Mostrar Metas", value: "mostrar" },
             { name: "✅ Marcar Metas Realizadas", value: "marcar" },
             { name: "🏆 Mostrar metas Realizadas", value: "realizadas" },
-            { name: "📋 Mostrar Metas Abertas", value: "Metas abertas" },
+            { name: "📋 Mostrar Metas Abertas", value: "abertas" },
+            {name : "❌ Deletar meta", value: "metas"},
             { name: "❌ Sair", value: "sair" }
         ]
     });
@@ -41,8 +42,11 @@ async function executarAcao(opcao) {
         case "realizadas":
             await metasRealizadas();
             break;
-            case "Metas abertas":
+            case "abertas":
             await metasAbertas();
+            break;
+            case "metas":
+            await deletarMetas();
             break;
         default:
             console.log("Opção inválida. Tente novamente.");
@@ -132,31 +136,70 @@ async function marcarMetas() {
 
 async function metasRealizadas() {
     const Realizadas = metas.filter(meta => meta.checked);
+
     if (Realizadas.length === 0) {
     mostrarMensagem = "Não existem metas realizadas!";
     return;
 }
+
 console.log("Metas Realizadas:");
 Realizadas.forEach((meta, index) => {
 console.log(`${index + 1}. ${meta.value}`);
 });
 
 mostrarMensagem(`Parabéns você já concluiu ${Realizadas.length} metas! 🎉`);
-}
-async function metasAbertas() {
-    const realizadas = metas.filter(meta => meta.checked);
 
-    if (metasAbertas.length === 0) {
+}
+
+
+async function metasAbertas() {
+    const abertas = metas.filter(meta => !meta.checked);
+
+    if (abertas.length === 0) {
     mostrarMensagem = "Não existem metas abertas!";
     return;
  }
 
- console.log("Metas abertas:");
-    metasAbertas.forEach((meta, index) => {
+    console.log("Metas abertas:");
+    abertas.forEach((meta, index) => {
     console.log(`${index + 1}. ${meta.value}`);
 });
 
-mostrarMensagem(`Você ainda tem ${metasAbertas.length} metas para concluir. Vamos lá! 💪`);
+mostrarMensagem(`Você ainda tem ${abertas.length} metas para concluir. Vamos lá! 💪`);
+
+}
+
+ async function deletarMetas(){
+
+
+    if(metas.length === 0) {
+        mostrarMensagem("Não existem metas cadastradas")
+        return;
+
+    }
+
+    const metasParaDeletar = await checkbox({
+        message: "Selecione as metas que você deseja deletar:",
+        choices: metas.map(meta =>
+            ({  name: meta.value,
+                value: meta.value,
+                checked: false
+             })),
+
+    });
+
+
+    if(metasParaDeletar.length === 0){
+        mostrarMensagem("❗Nenhuma meta foi selecionada para deletar");
+        return;
+    }
+
+
+    metasParaDeletar.forEach(metaParaDeletar => {
+        metas = metas.filter(meta => meta.value !== metaParaDeletar);
+   })
+   mostrarMensagem("Meta(s) deletada(s)!")
+
 
 }
  
