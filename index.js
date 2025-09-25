@@ -122,4 +122,18 @@ async function marcarMetas() {
     
 }
 
+async function metasRealizadas() {
+    const Realizadas = metas.filter(meta => meta.checked);
+    if (Realizadas.length === 0) {
+    mensagem = "Não existem metas realizadas!";
+    return;
+}
+console.log("Metas Realizadas:");
+Realizadas.forEach((meta, index) => {
+console.log(`${index + 1}. ${meta.value}`);
+});
+
+mostrarMensagem("Parabéns você já concluiu {realizadas.length} metas! 🎉");
+}
+
 iniciar();
