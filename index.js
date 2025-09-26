@@ -1,7 +1,43 @@
 const { input, select, checkbox } = require('@inquirer/prompts');
+const fs = require('fs');
 
-let metas =[]
+let metas = [];
 
+function definirMensagem(mensagem) {
+    mensagemAtual = novaMensagem;
+}
+
+
+function mostrarMensagemAtual() {
+    if (mensagemAtual) {
+        console.log(mensagemAtual);
+        mensagemAtual = ""; 
+    }
+}
+
+
+
+async function salvarMetas() {
+    try {
+        await fs.writeFileSync('metas.json', JSON.stringify(metas, null, 2)); 
+        console.log('✅ Metas salvas com sucesso!');
+    } catch (error) {
+        console.log('❌ Erro ao salvar metas:', error.message);
+
+   }
+}
+
+
+async function carregarMetas() {
+    try {
+        const dados = await fs.readFileSync('metas.json', 'utf-8');
+        metas = JSON.parse(dados);
+    }   catch (error) {
+        console.log('❌ Erro ao carregar metas:', error.message);
+    }
+
+
+}
 function limparTela() {
     console.clear();
 }   
@@ -11,35 +47,37 @@ function mostrarMensagem(mensagem) {
 }
 
 async function mostrarMenu() {
+
     const opcao = await select({
+
         message: "Escolha uma opção:",
         choices: [
             { name: "📝 Adicionar Meta", value: "adicionar" },
-            { name: "🗒️  Mostrar Metas", value: "mostrar" },
+            { name: "🗒️ Mostrar Metas", value: "mostrar" },
             { name: "✅ Marcar Metas Realizadas", value: "marcar" },
             { name: "🏆 Mostrar metas Realizadas", value: "realizadas" },
             { name: "📋 Mostrar Metas Abertas", value: "abertas" },
             {name : "❌ Deletar meta", value: "metas"},
-            { name: "❌ Sair", value: "sair" }
+            { name: "♦️ Sair", value: "sair" }
         ]
     });
     return opcao;
 }
 
 async function executarAcao(opcao) {
+
     switch (opcao) {
-        case "adicionar":
+
+            case "adicionar":
             await adicionarMeta();
             break;
-        case "mostrar":
+            case "mostrar":
             await mostrarMetas();
             break;
             case "marcar":
             await marcarMetas();
             break;
-        case "sair":
-            break;
-        case "realizadas":
+            case "realizadas":
             await metasRealizadas();
             break;
             case "abertas":
@@ -48,12 +86,15 @@ async function executarAcao(opcao) {
             case "metas":
             await deletarMetas();
             break;
+            case "sair":
+            break;
         default:
             console.log("Opção inválida. Tente novamente.");
     }
 }
 
 async function iniciar() {
+    carregarMetas();
     limparTela(); 
     mostrarMensagem("=== Sistema de Metas Pessoais ===");
 
@@ -68,6 +109,7 @@ async function iniciar() {
             break;
     }
     await executarAcao(opcao);
+    await salvarMetas();
  }
 }
 
@@ -92,6 +134,8 @@ async function adicionarMeta() {
     mostrarMensagem("✔️  Meta adicionada com sucesso!");
 }
 
+
+
 async function mostrarMetas() {
     if (metas.length === 0) {
         mostrarMensagem("Nenhuma meta cadastrada.");
@@ -106,11 +150,16 @@ async function mostrarMetas() {
     });
 }
 
+
+
 async function marcarMetas() {
+
     if (metas.length === 0) {
         mostrarMensagem("❌ Não existem metas cadastradas!");
         return;
     }
+
+
     const metasSelecionadas = await checkbox({
         message: "Selecione as metas que você concluiu:",
         choices: metas.map(meta =>
@@ -123,7 +172,7 @@ async function marcarMetas() {
     metas.forEach(meta => meta.checked = false);
 
     metasSelecionadas.forEach(metaSelecionada => {
-        const meta = metas.find(m => m.value === metaSelecionada);
+        const meta = metas.find(m => m.value === metaSelecionada)
         if (meta) {
             meta.checked = true;
         }
@@ -152,11 +201,12 @@ mostrarMensagem(`Parabéns você já concluiu ${Realizadas.length} metas! 🎉`)
 }
 
 
+
 async function metasAbertas() {
     const abertas = metas.filter(meta => !meta.checked);
 
     if (abertas.length === 0) {
-    mostrarMensagem = "Não existem metas abertas!";
+    mostrarMensagem = ("Não existem metas abertas!");
     return;
  }
 
@@ -169,11 +219,14 @@ mostrarMensagem(`Você ainda tem ${abertas.length} metas para concluir. Vamos l�
 
 }
 
+
+
+
  async function deletarMetas(){
 
 
     if(metas.length === 0) {
-        mostrarMensagem("Não existem metas cadastradas")
+        mostrarMensagem("Não existem metas cadastradas");
         return;
 
     }
@@ -186,11 +239,11 @@ mostrarMensagem(`Você ainda tem ${abertas.length} metas para concluir. Vamos l�
                 checked: false
              })),
 
-    });
+    })
 
 
     if(metasParaDeletar.length === 0){
-        mostrarMensagem("❗Nenhuma meta foi selecionada para deletar");
+        mostrarMensagem("❗Nenhuma meta foi selecionada para deletar")
         return;
     }
 
@@ -202,5 +255,6 @@ mostrarMensagem(`Você ainda tem ${abertas.length} metas para concluir. Vamos l�
 
 
 }
- 
+
+
 iniciar();
