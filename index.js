@@ -1,132 +1,134 @@
-const { input, select, checkbox } = require('@inquirer/prompts');
-const fs = require('fs');
+   const { input, select, checkbox } = require('@inquirer/prompts');
+   const fs = require('fs');
 
-let metas = [];
+   let metas = [];
 
-function definirMensagem(mensagem) {
-    mensagemAtual = novaMensagem;
+   function definirMensagem(mensagem) {
+   mensagemAtual = novaMensagem;
 }
 
 
-function mostrarMensagemAtual() {
+    function mostrarMensagemAtual() {
     if (mensagemAtual) {
-        console.log(mensagemAtual);
-        mensagemAtual = ""; 
+    console.log(mensagemAtual);
+    mensagemAtual = ""; 
     }
 }
 
 
 
-async function salvarMetas() {
+    async function salvarMetas() {
     try {
-        await fs.writeFileSync('metas.json', JSON.stringify(metas, null, 2)); 
-        console.log('✅ Metas salvas com sucesso!');
+    await fs.writeFileSync('metas.json', JSON.stringify(metas, null, 2)); 
+    console.log('✅ Metas salvas com sucesso!');
     } catch (error) {
-        console.log('❌ Erro ao salvar metas:', error.message);
+    console.log('❌ Erro ao salvar metas:', error.message);
 
    }
 }
 
 
-async function carregarMetas() {
+    async function carregarMetas() {
     try {
-        const dados = await fs.readFileSync('metas.json', 'utf-8');
-        metas = JSON.parse(dados);
-    }   catch (error) {
-        console.log('❌ Erro ao carregar metas:', error.message);
-    }
+    const dados = await fs.readFileSync('metas.json', 'utf-8');
+    metas = JSON.parse(dados);
+}   catch (error) {
+    console.log('❌ Erro ao carregar metas:', error.message);
+}
 
 
 }
-function limparTela() {
+    function limparTela() {
     console.clear();
 }   
 
-function mostrarMensagem(mensagem) {
+    function mostrarMensagem(mensagem) {
     console.log(`\n${mensagem}\n`);
 }
 
-async function mostrarMenu() {
+    async function mostrarMenu() {
 
     const opcao = await select({
 
-        message: "Escolha uma opção:",
-        choices: [
-            { name: "📝 Adicionar Meta", value: "adicionar" },
-            { name: "🗒️ Mostrar Metas", value: "mostrar" },
-            { name: "✅ Marcar Metas Realizadas", value: "marcar" },
-            { name: "🏆 Mostrar metas Realizadas", value: "realizadas" },
-            { name: "📋 Mostrar Metas Abertas", value: "abertas" },
-            {name : "❌ Deletar meta", value: "metas"},
-            { name: "♦️ Sair", value: "sair" }
-        ]
-    });
+    message: "Escolha uma opção:",
+    choices: [
+    { name: "📝 Adicionar Meta", value: "adicionar" },
+    { name: "🗒️  Mostrar Metas", value: "mostrar" },
+    { name: "✅ Marcar Metas Realizadas", value: "marcar" },
+    { name: "🏆 Mostrar metas Realizadas", value: "realizadas" },
+    { name: "📋 Mostrar Metas Abertas", value: "abertas" },
+    {name : "❌ Deletar meta", value: "metas"},
+    { name: "♦️ Sair", value: "sair" }
+]
+
+});
     return opcao;
 }
 
-async function executarAcao(opcao) {
+    async function executarAcao(opcao) {
 
     switch (opcao) {
 
-            case "adicionar":
-            await adicionarMeta();
-            break;
-            case "mostrar":
-            await mostrarMetas();
-            break;
-            case "marcar":
-            await marcarMetas();
-            break;
-            case "realizadas":
-            await metasRealizadas();
-            break;
-            case "abertas":
-            await metasAbertas();
-            break;
-            case "metas":
-            await deletarMetas();
-            break;
-            case "sair":
-            break;
-        default:
-            console.log("Opção inválida. Tente novamente.");
+    case "adicionar":
+    await adicionarMeta();
+    break;
+    case "mostrar":
+    await mostrarMetas();
+    break;
+    case "marcar":
+    await marcarMetas();
+    break;
+    case "realizadas":
+    await metasRealizadas();
+    break;
+    case "abertas":
+    await metasAbertas();
+    break;
+    case "metas":
+    await deletarMetas();
+    break;
+    case "sair":
+    break;
+    default:
+    console.log("Opção inválida. Tente novamente.");
     }
 }
 
-async function iniciar() {
+    async function iniciar() {
     carregarMetas();
     limparTela(); 
     mostrarMensagem("=== Sistema de Metas Pessoais ===");
 
 
     while (true) {
-        const opcao = await mostrarMenu();
+    const opcao = await mostrarMenu();
         
-        if (opcao === "sair") {
-            await executarAcao(opcao);
-            limparTela();
-            mostrarMensagem("Até mais!👋");
-            break;
+    if (opcao === "sair") {
+    await executarAcao(opcao);
+    limparTela();
+    mostrarMensagem("Até mais!👋");
+    break;
     }
+
     await executarAcao(opcao);
     await salvarMetas();
  }
 }
 
 
-async function adicionarMeta() {
+    async function adicionarMeta() {
     const descricao = await input({
-        message: "Digite sua nova meta pessoal:"
+    message: "Digite sua nova meta pessoal:"
     });
 
     if (descricao.length === 0) {
-        mostrarMensagem("❌ Meta inválida. Tente novamente.");
-        return;
+    mostrarMensagem("❌ Meta inválida. Tente novamente.");
+    return;
     }
 
     const novaMeta = {
-        value: descricao,
-        checked: false
+    value: descricao,
+    checked: false
     }
 
     metas.push(novaMeta);
@@ -136,46 +138,46 @@ async function adicionarMeta() {
 
 
 
-async function mostrarMetas() {
+    async function mostrarMetas() {
     if (metas.length === 0) {
-        mostrarMensagem("Nenhuma meta cadastrada.");
-        return;
+    mostrarMensagem("Nenhuma meta cadastrada.");
+    return;
     }
 
 
     console.log("❤️ Suas Metas Pessoais:");
     metas.forEach((meta, index) => {
-        const status = meta.checked ? "[x]" : "[ ]";
-        console.log(`${status} ${index + 1}. ${meta.value}`);
+    const status = meta.checked ? "[x]" : "[ ]";
+    console.log(`${status} ${index + 1}. ${meta.value}`);
     });
 }
 
 
 
-async function marcarMetas() {
+    async function marcarMetas() {
 
     if (metas.length === 0) {
-        mostrarMensagem("❌ Não existem metas cadastradas!");
-        return;
+    mostrarMensagem("❌ Não existem metas cadastradas!");
+    return;
     }
 
 
     const metasSelecionadas = await checkbox({
-        message: "Selecione as metas que você concluiu:",
-        choices: metas.map(meta =>
-            ({  name: meta.value,
-                value: meta.value,
-                checked: meta.checked
+    message: "Selecione as metas que você concluiu:",
+    choices: metas.map(meta =>
+({  name: meta.value,
+    value: meta.value,
+    checked: meta.checked
              })),
     })
 
     metas.forEach(meta => meta.checked = false);
 
     metasSelecionadas.forEach(metaSelecionada => {
-        const meta = metas.find(m => m.value === metaSelecionada)
-        if (meta) {
-            meta.checked = true;
-        }
+    const meta = metas.find(m => m.value === metaSelecionada)
+    if (meta) {
+    meta.checked = true;
+}
     });
 
     mostrarMensagem("✔️ Metas atualizadas com sucesso!");
@@ -183,7 +185,7 @@ async function marcarMetas() {
     
 }
 
-async function metasRealizadas() {
+    async function metasRealizadas() {
     const Realizadas = metas.filter(meta => meta.checked);
 
     if (Realizadas.length === 0) {
@@ -191,18 +193,18 @@ async function metasRealizadas() {
     return;
 }
 
-console.log("Metas Realizadas:");
-Realizadas.forEach((meta, index) => {
-console.log(`${index + 1}. ${meta.value}`);
+    console.log("Metas Realizadas:");
+    Realizadas.forEach((meta, index) => {
+    console.log(`${index + 1}. ${meta.value}`);
 });
 
-mostrarMensagem(`Parabéns você já concluiu ${Realizadas.length} metas! 🎉`);
+    mostrarMensagem(`Parabéns você já concluiu ${Realizadas.length} metas! 🎉`);
 
 }
 
 
 
-async function metasAbertas() {
+    async function metasAbertas() {
     const abertas = metas.filter(meta => !meta.checked);
 
     if (abertas.length === 0) {
@@ -215,43 +217,43 @@ async function metasAbertas() {
     console.log(`${index + 1}. ${meta.value}`);
 });
 
-mostrarMensagem(`Você ainda tem ${abertas.length} metas para concluir. Vamos lá! 💪`);
+   mostrarMensagem(`Você ainda tem ${abertas.length} metas para concluir. Vamos lá! 💪`);
 
 }
 
 
 
 
- async function deletarMetas(){
-
+    async function deletarMetas(){
 
     if(metas.length === 0) {
-        mostrarMensagem("Não existem metas cadastradas");
-        return;
+    mostrarMensagem("Não existem metas cadastradas");
+    return;
 
     }
 
     const metasParaDeletar = await checkbox({
-        message: "Selecione as metas que você deseja deletar:",
-        choices: metas.map(meta =>
-            ({  name: meta.value,
-                value: meta.value,
-                checked: false
-             })),
+    message: "Selecione as metas que você deseja deletar:",
+    choices: metas.map(meta =>
+({  name: meta.value,
+    value: meta.value,
+    checked: false
+ })),
 
     })
 
 
     if(metasParaDeletar.length === 0){
-        mostrarMensagem("❗Nenhuma meta foi selecionada para deletar")
-        return;
+    mostrarMensagem("❗Nenhuma meta foi selecionada para deletar")
+    return;
     }
 
 
     metasParaDeletar.forEach(metaParaDeletar => {
-        metas = metas.filter(meta => meta.value !== metaParaDeletar);
+    metas = metas.filter(meta => meta.value !== metaParaDeletar);
    })
-   mostrarMensagem("Meta(s) deletada(s)!")
+
+    mostrarMensagem("Meta(s) deletada(s)!")
 
 
 }
